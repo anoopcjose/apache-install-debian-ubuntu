@@ -8,7 +8,7 @@
     - apache-variables.vars
   tasks:
 
-    - name: "AL: Installing Packages"
+    - name: "AL: Install Packages"
       when: ansible_os_family == "RedHat" and ansible_distribution == "Amazon"
       yum:
         name: "{{ amazon_packages }}"

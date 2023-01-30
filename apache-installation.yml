@@ -1,0 +1,52 @@
+---
+- name: "Apache Installation Playbook:: Amazon Linux and Ubuntu"
+  hosts:
+    - amazon
+    - ubuntu
+  become: true
+  vars_files:
+    - apache-variables.vars
+  tasks:
+
+    - name: "AL: Installing Packages"
+      when: ansible_os_family == "RedHat" and ansible_distribution == "Amazon"
+      yum:
+        name: "{{ amazon_packages }}"
+        state: present
+
+    - name: "AL: Create index.html page"
+      when: ansible_os_family == "RedHat" and ansible_distribution == "Amazon"
+      copy:
+        content: "<h1><center>Amazon Linux Server:: {{ ansible_hostname }} </center></h1>"
+        dest: "/var/www/html/index.php"
+        owner: "{{ amazon_user }}"
+        group: "{{ amazon_user }}"
+
+    - name: "Restart/Enable Service"
+      when: ansible_os_family == "RedHat" and ansible_distribution == "Amazon"
+      service:
+        name: "{{ amazon_service }}"
+        state: restarted
+        enabled: true
+
+    - name: "U: Installing Packages"
+      when: ansible_os_family == "Debian" and ansible_distribution == "Ubuntu"
+      apt:
+        name: "{{ ubuntu_packages }}"
+        state: present
+        update_cache: true
+
+    - name: "U: Create index.html"
+      when: ansible_os_family == "Debian" and ansible_distribution == "Ubuntu"
+      copy:
+        content: "<h1><center>{{ ansible_hostname }} </center></h1>"
+        dest: "/var/www/html/index.html"
+        owner: "{{ ubuntu_user }}"
+        group: "{{ ubuntu_user }}"
+
+    - name: "Restart/Enable Service"
+      when: ansible_os_family == "Debian" and ansible_distribution == "Ubuntu"
+      service:
+        name: "{{ ubuntu_service }}"
+        state: restarted
+        enabled: true
